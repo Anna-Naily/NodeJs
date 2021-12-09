@@ -4,25 +4,28 @@ const numbers = process.argv.slice(2);
 console.log(numbers);
 
 function getRandomNumber(min, max) {
-  for (i = 0; i < 3; i++) {
-    if (!Number.isInteger(min) || !Number.isInteger(max)) {
-      console.log(colors.red("Your number isn't a Number"));
-      return;
-    } else {
-      const outputNumber = Math.floor(Math.random() * (max - min + 1)) + min;
-      if (outputNumber < min || outputNumber > max)
+  if (!Number.isInteger(min) || !Number.isInteger(max)) {
+    console.log(colors.red("Your number isn't a Number"));
+    return;
+  } else {
+    let color = 1;
+    for (i = min; i <= max; i++) {
+      if (i < min || i > max) {
         console.log(colors.red("Your number is out of range"));
-
-      switch (i) {
-        case 0:
-          console.log(colors.green(outputNumber));
-          break;
-        case 1:
-          console.log(colors.yellow(outputNumber));
-          break;
-        case 2:
-          console.log(colors.red(outputNumber));
-          break;
+      } else {
+        switch (color) {
+          case 1:
+            console.log(colors.green(i));
+            break;
+          case 2:
+            console.log(colors.yellow(i));
+            break;
+          case 3:
+            console.log(colors.red(i));
+            break;
+        }
+        color++;
+        if (color > 3) color = 1;
       }
     }
   }
