@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+  <script
+    src="https://cdn.socket.io/3.1.1/socket.io.min.js"
+    integrity="sha384-gDaozqUvc4HTgo8iZjwth73C6dDDeOJsAgpxBcMpZYztUfjHXpzrpdrHRdVp8ySO"
+    crossorigin="anonymous"
+  ></script>
+
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Socket App</title>
+  </head>
+  <body>
+    <div>
+      <input type="text" id="input" autofocus />
+      <input type="submit" id="send" value="Send" />
+      <div id="messages"></div>
+    </div>
+    <div>
+      <h1>Список пользователей:</h1>
+      <div id="arrayUsers"></div>
+    </div>
+  </body>
+  <script type="text/javascript">
+    const socket = io("localhost:5000");
+    const messagesBlock = document.querySelector("#messages");
+    const sendButton = document.querySelector("#send");
+    const input = document.querySelector("#input");
+    const arrayUsers = document.querySelector("#arrayUsers");
+
+    sendButton.addEventListener("click", () => {
+      const data = {
+        message: input.value,
+        name: "nameUser",
+      };
+      socket.emit("client-message", data);
+      input.value = "";
+    });
+    socket.on("server-message", message => {
+      messagesBlock.insertAdjacentHTML("afterbegin", `<div>${message}</div>`);
+    });
+
+    socket.on("client-connection", data => {
+      messagesBlock.insertAdjacentHTML("afterbegin", `<div>${data.msg}</div>`);
+      arrayUsers.innerHTML = "";
+      data.userList.forEach(user => {
+        arrayUsers.insertAdjacentHTML("afterbegin", `<div>${user}</div>`);
+      });
+    });
+
+    socket.on("connect", usersList => {
+      messagesBlock.insertAdjacentHTML(
+        "afterbegin",
+        `<div>${"Добро пожаловать в чат!"}</div>`
+      );
+    });
+    socket.on("connected", usersList => {
+      usersList.forEach(user => {
+        arrayUsers.insertAdjacentHTML("afterbegin", `<div>${user}</div>`);
+      });
+    });
+    socket.on("user-leave", data => {
+      messagesBlock.insertAdjacentHTML("afterbegin", `<div>${data.msg}</div>`);
+      arrayUsers.innerHTML = "";
+      data.userList.forEach(user => {
+        arrayUsers.insertAdjacentHTML("afterbegin", `<div>${user}</div>`);
+      });
+    });
+  </script>
+</html>
